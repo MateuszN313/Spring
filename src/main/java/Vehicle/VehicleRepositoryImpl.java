@@ -64,7 +64,6 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
         return copy;
     }
 
-    @Override
     public void save() {
         try{
             PrintWriter writer = new PrintWriter("src/main/resources/vehicles.csv");
@@ -76,7 +75,7 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
             System.out.println("Błąd zapisu pliku");
         }
     }
-    @Override
+
     public void load() {
         try{
             File file = new File("src/main/resources/vehicles.csv");

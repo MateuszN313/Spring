@@ -9,6 +9,4 @@ public interface IVehicleRepository {
     Vehicle getVehicle(String id);
     boolean add(Vehicle vehicle);
     boolean remove(String id);
-    void save();
-    void load();
 }

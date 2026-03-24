@@ -1,5 +1,7 @@
 package User;
 
+import Vehicle.Vehicle;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -43,11 +45,32 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
-    public boolean addUser(User user){
+    public boolean add(User user){
         if(getUser(user.getLogin()) == null){
             this.users.add(user);
+            save();
             return true;
         }
+        return false;
+    }
+
+    @Override
+    public boolean remove(String login){
+        for(int i = 0; i < this.users.size(); i++){
+            User u = this.users.get(i);
+            if(u.getLogin().equals(login)){
+                if(!u.getRentedVehicleId().isEmpty()){
+                    System.out.println("Nie można usunąć użytkownika bo ma wypożyczony pojazd");
+                    return false;
+                }
+                this.users.remove(i);
+                save();
+                System.out.println("Usunięto użytkownika");
+                return true;
+            }
+        }
+
+        System.out.println("Nie znaleziono użytkownika z podanym loginem");
         return false;
     }
 

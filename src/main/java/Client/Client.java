@@ -14,6 +14,8 @@ import Vehicle.IVehicleRepository;
 import java.util.List;
 import java.util.Scanner;
 
+import static User.Role.USER;
+
 public class Client {
     private final IVehicleRepository vehicleRepository;
     private final IUserRepository userRepository;
@@ -26,10 +28,12 @@ public class Client {
         this.userRepository = userRepository;
         this.scanner = new Scanner(System.in);
         this.authentication = new Authentication(userRepository);
-        while(!login());
     }
 
     public void UI() {
+        if(!begin())
+            return;
+
         String choice;
         do{
             System.out.println("\nWybierz akcję:\n" +
@@ -41,28 +45,59 @@ public class Client {
                 System.out.println("\nADMIN:\n" +
                         "5 - Dodaj pojazd\n" +
                         "6 - Usuń pojazd\n" +
-                        "7 - Wyświetl użytkowników");
+                        "7 - Wyświetl użytkowników\n" +
+                        "8 - Usuń użytkownika");
             }
             choice = this.scanner.nextLine();
 
-            switch (choice) {
+            switch(choice){
                 case "1" -> showVehicles();
                 case "2" -> rent();
                 case "3" -> ret();
             }
 
             if(this.user.getRole() == Role.ADMIN){
-                switch (choice) {
-                    case "5" -> add();
-                    case "6" -> delete();
+                switch(choice){
+                    case "5" -> addVehicle();
+                    case "6" -> removeVehicle();
                     case "7" -> showUsers();
+                    case "8" -> removeUser();
                 }
-
             }
-
         }while(!choice.equals("4"));
     }
 
+    private boolean begin(){
+        while(true){
+            System.out.println("1 - Zaloguj się\n" +
+                    "2 - Zarejestruj się\n" +
+                    "3 - Wyjdź");
+            String choice = this.scanner.nextLine();
+
+            if(choice.equals("1")){
+                while(!login());
+                return true;
+            }else if(choice.equals("2")){
+                while(!register());
+                return true;
+            }else if(choice.equals("3")){
+                return false;
+            }
+        }
+    }
+    private boolean register(){
+        System.out.println("Podaj login");
+        String login = this.scanner.nextLine();
+        System.out.println("Podaj hasło");
+        String password = Authentication.hashPassword(this.scanner.nextLine());
+
+        this.user = new User(login, password, USER, "");
+        if(!this.userRepository.add(this.user)) {
+            System.out.println("ten login jest już zajęty");
+            return false;
+        }
+        return true;
+    }
     private boolean login(){
         System.out.println("Podaj login");
         String login = this.scanner.nextLine();
@@ -98,7 +133,7 @@ public class Client {
         this.user.setRentedVehicleId("");
         this.userRepository.update(this.user);
     }
-    private void add(){
+    private void addVehicle(){
         Vehicle v = null;
 
         System.out.println("Podaj dane pojazdu:\n" +
@@ -149,10 +184,17 @@ public class Client {
 
         this.vehicleRepository.add(v);
     }
-    private void delete(){
+    private void removeVehicle(){
         System.out.println("Podaj ID");
         String id = this.scanner.nextLine();
-        System.out.println(this.vehicleRepository.getVehicle(id));
+
+        Vehicle v = this.vehicleRepository.getVehicle(id);
+                if(v == null){
+                    System.out.println("Nie znaleziono pojazdu z podanym ID");
+                    return;
+                }
+
+        System.out.println(v);
         System.out.println("Czy napewno chcesz usunąć ten pojazd?\n" +
                 "T - tak | Inne - nie");
         String tmp = this.scanner.nextLine();
@@ -164,6 +206,25 @@ public class Client {
         List<User> copy = this.userRepository.getUsers();
         for(User u : copy){
             System.out.println(u.toString());
+        }
+    }
+
+    private void removeUser(){
+        System.out.println("Podaj login");
+        String login = this.scanner.nextLine();
+
+        User u = this.userRepository.getUser(login);
+        if(u == null){
+            System.out.println("Nie znaleziono użytkownika z podanym loginem");
+            return;
+        }
+
+        System.out.println(u);
+        System.out.println("Czy napewno chcesz usunąć tego użytkownika?\n" +
+                "T - tak | Inne - nie");
+        String tmp = this.scanner.nextLine();
+        if(tmp.equals("T") || tmp.equals("t")){
+            this.userRepository.remove(login);
         }
     }
 }

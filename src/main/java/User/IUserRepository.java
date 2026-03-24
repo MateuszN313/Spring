@@ -6,5 +6,6 @@ public interface IUserRepository {
     User getUser(String login);
     List<User> getUsers();
     boolean update(User user);
-    boolean addUser(User user);
+    boolean add(User user);
+    boolean remove(String id);
 }

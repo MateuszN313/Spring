@@ -64,7 +64,6 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
         return copy;
     }
 
-    @Override
     public void save() {
         try{
             PrintWriter writer = new PrintWriter("src/main/resources/vehicles.csv");
@@ -105,6 +104,7 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
         }
     }
 
+    @Override
     public Vehicle getVehicle(String id) {
         for(Vehicle v : this.vehicles){
             if(v.getId().equals(id)) {

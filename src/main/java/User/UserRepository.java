@@ -43,6 +43,14 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
+    public boolean addUser(User user){
+        if(getUser(user.getLogin()) == null){
+            this.users.add(user);
+            return true;
+        }
+        return false;
+    }
+
     public void save() {
         try{
             PrintWriter writer = new PrintWriter("src/main/resources/users.csv");
@@ -55,7 +63,6 @@ public class UserRepository implements IUserRepository {
         }
     }
 
-    @Override
     public void load() {
         try{
             File file = new File("src/main/resources/users.csv");

@@ -76,7 +76,7 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
             System.out.println("Błąd zapisu pliku");
         }
     }
-    @Override
+
     public void load() {
         try{
             File file = new File("src/main/resources/vehicles.csv");
@@ -105,7 +105,6 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
         }
     }
 
-    @Override
     public Vehicle getVehicle(String id) {
         for(Vehicle v : this.vehicles){
             if(v.getId().equals(id)) {

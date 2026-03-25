@@ -1,9 +1,11 @@
-import Client.Client;
-import User.IUserRepository;
-import User.UserRepository;
+package org.example;
 
-import Vehicle.IVehicleRepository;
-import Vehicle.VehicleRepositoryImpl;
+import org.example.Client.Client;
+import org.example.User.IUserRepository;
+import org.example.User.UserRepository;
+
+import org.example.Vehicle.IVehicleRepository;
+import org.example.Vehicle.VehicleRepositoryImpl;
 
 public class Main {
     public static void main(String[] args) {

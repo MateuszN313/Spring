@@ -1,4 +1,4 @@
-package User;
+package org.example.User;
 
 public class User {
     private String login;

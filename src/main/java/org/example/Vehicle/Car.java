@@ -1,4 +1,4 @@
-package Vehicle;
+package org.example.Vehicle;
 
 public class Car extends Vehicle {
     public Car(String id, String brand, String model, int year, double price, boolean rented) {

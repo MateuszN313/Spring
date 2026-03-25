@@ -1,4 +1,4 @@
-package Vehicle;
+package org.example.Vehicle;
 
 public class Motorcycle extends Vehicle {
     private DrivingLicenceCategory drivingLicenceCategory;

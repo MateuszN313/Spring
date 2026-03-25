@@ -1,4 +1,4 @@
-package Vehicle;
+package org.example.Vehicle;
 
 import java.util.List;
 

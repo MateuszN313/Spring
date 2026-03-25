@@ -1,4 +1,4 @@
-package User;
+package org.example.User;
 
 import org.apache.commons.codec.digest.DigestUtils;
 

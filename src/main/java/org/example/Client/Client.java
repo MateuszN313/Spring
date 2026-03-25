@@ -14,7 +14,7 @@ import org.example.Vehicle.IVehicleRepository;
 import java.util.List;
 import java.util.Scanner;
 
-import static User.Role.USER;
+import static org.example.User.Role.USER;
 
 public class Client {
     private final IVehicleRepository vehicleRepository;

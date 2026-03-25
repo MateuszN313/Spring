@@ -1,4 +1,4 @@
-package Vehicle;
+package org.example.Vehicle;
 
 import java.io.File;
 import java.io.FileNotFoundException;

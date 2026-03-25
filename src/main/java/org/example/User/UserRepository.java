@@ -1,9 +1,4 @@
 package org.example.User;
-<<<<<<< HEAD
-
-import Vehicle.Vehicle;
-=======
->>>>>>> task3
 
 import java.io.File;
 import java.io.FileNotFoundException;

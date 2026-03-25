@@ -1,6 +1,4 @@
-package User;
-
-import Vehicle.Vehicle;
+package org.example.User;
 
 import java.io.File;
 import java.io.FileNotFoundException;

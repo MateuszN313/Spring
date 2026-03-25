@@ -1,20 +1,20 @@
-package Client;
+package org.example.Client;
 
-import User.User;
-import User.Authentication;
-import User.IUserRepository;
-import User.Role;
+import org.example.User.User;
+import org.example.User.Authentication;
+import org.example.User.IUserRepository;
+import org.example.User.Role;
 
-import Vehicle.Vehicle;
-import Vehicle.Car;
-import Vehicle.Motorcycle;
-import Vehicle.DrivingLicenceCategory;
-import Vehicle.IVehicleRepository;
+import org.example.Vehicle.Vehicle;
+import org.example.Vehicle.Car;
+import org.example.Vehicle.Motorcycle;
+import org.example.Vehicle.DrivingLicenceCategory;
+import org.example.Vehicle.IVehicleRepository;
 
 import java.util.List;
 import java.util.Scanner;
 
-import static User.Role.USER;
+import static org.example.User.Role.USER;
 
 public class Client {
     private final IVehicleRepository vehicleRepository;

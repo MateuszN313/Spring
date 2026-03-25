@@ -1,4 +1,4 @@
-package Vehicle;
+package org.example.Vehicle;
 
 public abstract class Vehicle {
     protected String id;

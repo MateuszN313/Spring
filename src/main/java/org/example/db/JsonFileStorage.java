@@ -1,4 +1,4 @@
-package com.umcsuser.carrent.db;
+package org.example.db;
 
 import com.google.gson.Gson;
 import java.io.IOException;

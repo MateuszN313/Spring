@@ -1,36 +1,33 @@
-package org.example.Client;
+package org.example;
 
-import org.example.User.User;
-import org.example.User.Authentication;
-import org.example.User.IUserRepository;
-import org.example.User.Role;
+import org.example.models.User;
+import org.example.models.Role;
 
-import org.example.Vehicle.Vehicle;
-import org.example.Vehicle.Car;
-import org.example.Vehicle.Motorcycle;
-import org.example.Vehicle.DrivingLicenceCategory;
-import org.example.Vehicle.IVehicleRepository;
+import org.example.models.Vehicle;
+import org.example.repositories.UserRepository;
+import org.example.repositories.VehicleRepository;
+import org.example.services.AuthService;
 
 import java.util.List;
 import java.util.Scanner;
 
-import static org.example.User.Role.USER;
+import static org.example.models.Role.USER;
 
-public class Client {
-    private final IVehicleRepository vehicleRepository;
-    private final IUserRepository userRepository;
+public class UI {
+    private final VehicleRepository vehicleRepository;
+    private final UserRepository userRepository;
     private final Scanner scanner;
-    private final Authentication authentication;
+    private final AuthService authentication;
     private User user;
 
-    public Client(IVehicleRepository vehicleRepository, IUserRepository userRepository){
+    public UI(VehicleRepository vehicleRepository, UserRepository userRepository){
         this.vehicleRepository = vehicleRepository;
         this.userRepository = userRepository;
         this.scanner = new Scanner(System.in);
-        this.authentication = new Authentication(userRepository);
+        this.authentication = new AuthService(userRepository);
     }
 
-    public void UI() {
+    public void start() {
         if(!begin())
             return;
 

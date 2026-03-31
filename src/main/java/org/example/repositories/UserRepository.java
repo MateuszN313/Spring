@@ -1,7 +1,6 @@
-package com.umcsuser.carrent.repositories;
+package org.example.repositories;
 
-
-import com.umcsuser.carrent.models.User;
+import org.example.models.User;
 
 import java.util.List;
 import java.util.Optional;

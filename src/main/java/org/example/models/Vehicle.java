@@ -1,45 +1,69 @@
-package org.example.Vehicle;
+package org.example.models;
 
-public abstract class Vehicle {
-    protected String id;
-    protected String brand;
-    protected String model;
-    protected int year;
-    protected double price;
-    protected boolean rented;
+import lombok.*;
 
-    public Vehicle(String id, String brand, String model, int year, double price, boolean rented) {
-        try{
-            Integer.parseInt(id);
-        }catch (NumberFormatException e){
-            System.out.println("ID musi być liczbą");
-            return;
-        }
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@Builder
+@EqualsAndHashCode(of = "id")
+@ToString
+public class Vehicle {
+    private String id;
+    private String category;
+    private String brand;
+    private String model;
+    private int year;
+    private String plate;
+    private double price;
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Map<String, Object> attributes;
+
+    @Builder
+    public Vehicle(String id, String category, String brand, String model, int year, String plate, double price, Map<String, Object> attributes) {
         this.id = id;
+        this.category = category;
         this.brand = brand;
         this.model = model;
         this.year = year;
+        this.plate = plate;
         this.price = price;
-        this.rented = rented;
+        this.attributes = attributes == null ? new HashMap<>() : new HashMap<>(attributes);
     }
 
-    public String getId() {
-        return id;
-    }
-    public boolean isRented() {
-        return rented;
+    public Map<String, Object> getAttributes() {
+        return Collections.unmodifiableMap(this.attributes);
     }
 
-    public void setRented(boolean rented){
-        this.rented = rented;
+    public Object getAttribute(String key) {
+        return this.attributes.get(key);
     }
 
-    public String toCSV(){
-        return this.id + ";" + this.brand + ";" + this.model + ";" + this.year + ";" + this.price + ";" + this.rented;
+    public void addAttribute(String key, Object value) {
+        this.attributes.put(key, value);
     }
-    @Override
-    public String toString() {
-        return "id: " + this.id + ", brand: " + this.brand + ", model: " + this.model + ", year: " + this.year + ", price: " + this.price + ", rented: " + this.rented;
+
+    public void removeAttribute(String key) {
+        attributes.remove(key);
+    }
+
+    public Vehicle copy() {
+        return Vehicle.builder()
+                .id(id)
+                .category(category)
+                .brand(brand)
+                .model(model)
+                .year(year)
+                .plate(plate)
+                .price(price)
+                .attributes(new HashMap<>(attributes))
+                .build();
     }
 }

@@ -48,7 +48,7 @@ public class UserJsonRepository implements UserRepository {
     @Override
     public User save(User user) {
         if(user == null)
-            throw new IllegalArgumentException("vehicle cannot be null");
+            throw new IllegalArgumentException("user cannot be null");
 
         User toSave = user.copy();
         if(toSave.getId() == null || toSave.getId().isBlank())

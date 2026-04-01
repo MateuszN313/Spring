@@ -40,7 +40,7 @@ public class RentalJsonRepository implements RentalRepository {
     @Override
     public Rental save(Rental rental) {
         if(rental == null)
-            throw new IllegalArgumentException("vehicle cannot be null");
+            throw new IllegalArgumentException("rental cannot be null");
 
         Rental toSave = rental.copy();
         if(toSave.getId() == null || toSave.getId().isBlank())

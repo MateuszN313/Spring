@@ -15,23 +15,23 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    private static String hashPassword(String password) {
+    public String hashPassword(String password) {
         String salt = BCrypt.gensalt();
         return BCrypt.hashpw(password, salt);
     }
+
+    public Optional<User> register(String login, String passwordHash) {
+        if(this.userRepository.findByLogin(login).isPresent())
+            return Optional.empty();
+
+        User user = new User(UUID.randomUUID().toString(), login, passwordHash, Role.USER);
+        this.userRepository.save(user);
+        return Optional.of(user);
+    }
+
     public Optional<User> login(String login, String password) {
         String passwordHash = hashPassword(password);
         Optional<User> opt = this.userRepository.findByLogin(login);
         return opt.filter(user -> user.getPasswordHash().equals(passwordHash));
-    }
-
-    public Optional<User> register(String login, String password) {
-        if(this.userRepository.findByLogin(login).isPresent())
-            return Optional.empty();
-
-        String passwordHash = hashPassword(password);
-        User user = new User(UUID.randomUUID().toString(), login, passwordHash, Role.USER);
-        this.userRepository.save(user);
-        return Optional.of(user);
     }
 }

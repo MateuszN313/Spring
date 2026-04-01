@@ -4,11 +4,13 @@ import org.example.models.User;
 import org.example.models.Role;
 
 import org.example.models.Vehicle;
+import org.example.repositories.RentalRepository;
 import org.example.repositories.UserRepository;
 import org.example.repositories.VehicleRepository;
 import org.example.services.AuthService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import static org.example.models.Role.USER;
@@ -16,15 +18,17 @@ import static org.example.models.Role.USER;
 public class UI {
     private final VehicleRepository vehicleRepository;
     private final UserRepository userRepository;
+    private final RentalRepository rentalRepository;
+    private final AuthService authService;
     private final Scanner scanner;
-    private final AuthService authentication;
     private User user;
 
-    public UI(VehicleRepository vehicleRepository, UserRepository userRepository){
+    public UI(VehicleRepository vehicleRepository, UserRepository userRepository, RentalRepository rentalRepository, AuthService authService){
         this.vehicleRepository = vehicleRepository;
         this.userRepository = userRepository;
+        this.rentalRepository = rentalRepository;
+        this.authService = authService;
         this.scanner = new Scanner(System.in);
-        this.authentication = new AuthService(userRepository);
     }
 
     public void start() {
@@ -72,11 +76,11 @@ public class UI {
             String choice = this.scanner.nextLine();
 
             if(choice.equals("1")){
-                while(!login());
-                return true;
+                if(login())
+                    return true;
             }else if(choice.equals("2")){
-                while(!register());
-                return true;
+                if(register())
+                    return true;
             }else if(choice.equals("3")){
                 return false;
             }
@@ -86,50 +90,53 @@ public class UI {
         System.out.println("Podaj login");
         String login = this.scanner.nextLine();
         System.out.println("Podaj hasło");
-        String password = Authentication.hashPassword(this.scanner.nextLine());
+        String passwordHash = this.authService.hashPassword(this.scanner.nextLine());
 
-        this.user = new User(login, password, USER, "");
-        if(!this.userRepository.add(this.user)) {
-            System.out.println("ten login jest już zajęty");
-            return false;
+        Optional<User> opt = this.authService.register(login, passwordHash);
+        if(opt.isPresent()){
+            this.user = opt.get();
+            return true;
         }
-        return true;
+        System.out.println("Nie udało się zarejestrować");
+        return false;
     }
+
     private boolean login(){
         System.out.println("Podaj login");
         String login = this.scanner.nextLine();
         System.out.println("Podaj hasło");
         String password = this.scanner.nextLine();
 
-        this.user = this.authentication.authenticate(login, password);
-        if(this.user == null){
-            System.out.println("błędny login lub hasło");
-            return false;
+        Optional<User> opt = this.authService.login(login, password);
+        if(opt.isPresent()){
+            this.user = opt.get();
+            return true;
         }
-        return true;
+        System.out.println("nie udało się zalogować");
+        return false;
     }
+
     private void showVehicles(){
-        List<Vehicle> copy = this.vehicleRepository.getVehicles();
+        List<Vehicle> copy = this.vehicleRepository.findAll();
         for(Vehicle v : copy){
             System.out.println(v.toString());
         }
     }
-    private void rent(){
-        if(!this.user.getRentedVehicleId().isEmpty()){
-            System.out.println("Masz już wypożyczony pojazd");
-        }
 
+    private void rent(){
         System.out.println("Podaj id");
         String id = this.scanner.nextLine();
         this.vehicleRepository.rentVehicle(id);
         this.user.setRentedVehicleId(id);
         this.userRepository.update(this.user);
     }
+
     private void ret(){
         this.vehicleRepository.returnVehicle(this.user.getRentedVehicleId());
         this.user.setRentedVehicleId("");
         this.userRepository.update(this.user);
     }
+
     private void addVehicle(){
         Vehicle v = null;
 
@@ -181,47 +188,49 @@ public class UI {
 
         this.vehicleRepository.add(v);
     }
+
     private void removeVehicle(){
         System.out.println("Podaj ID");
         String id = this.scanner.nextLine();
 
-        Vehicle v = this.vehicleRepository.getVehicle(id);
-                if(v == null){
-                    System.out.println("Nie znaleziono pojazdu z podanym ID");
-                    return;
-                }
-
-        System.out.println(v);
+        Optional<Vehicle> opt = this.vehicleRepository.findById(id);
+        if(opt.isEmpty()){
+            System.out.println("Nie znaleziono pojazdu z podanym ID");
+            return;
+        }
+        Vehicle vehicle = opt.get();
+        System.out.println(vehicle);
         System.out.println("Czy napewno chcesz usunąć ten pojazd?\n" +
                 "T - tak | Inne - nie");
         String tmp = this.scanner.nextLine();
         if(tmp.equals("T") || tmp.equals("t")){
-            this.vehicleRepository.remove(id);
+            this.vehicleRepository.deleteById(id);
         }
     }
+
     private void showUsers(){
-        List<User> copy = this.userRepository.getUsers();
+        List<User> copy = this.userRepository.findAll();
         for(User u : copy){
             System.out.println(u.toString());
         }
     }
 
     private void removeUser(){
-        System.out.println("Podaj login");
-        String login = this.scanner.nextLine();
+        System.out.println("Podaj ID");
+        String id = this.scanner.nextLine();
 
-        User u = this.userRepository.getUser(login);
-        if(u == null){
-            System.out.println("Nie znaleziono użytkownika z podanym loginem");
+        Optional<User> opt = this.userRepository.findById(id);
+        if(opt.isEmpty()){
+            System.out.println("Nie znaleziono użytkownika z podanym id");
             return;
         }
-
-        System.out.println(u);
+        User user = opt.get();
+        System.out.println(user);
         System.out.println("Czy napewno chcesz usunąć tego użytkownika?\n" +
                 "T - tak | Inne - nie");
         String tmp = this.scanner.nextLine();
         if(tmp.equals("T") || tmp.equals("t")){
-            this.userRepository.remove(login);
+            this.userRepository.deleteById(id);
         }
     }
 }

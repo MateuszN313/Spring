@@ -6,7 +6,6 @@ import org.example.repositories.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public class AuthService {
     private final UserRepository userRepository;
@@ -15,18 +14,21 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    public String hashPassword(String password) {
+    private String hashPassword(String password) {
         String salt = BCrypt.gensalt();
         return BCrypt.hashpw(password, salt);
     }
 
-    public Optional<User> register(String login, String passwordHash) {
+    public User register(String login, String password) {
         if(this.userRepository.findByLogin(login).isPresent())
-            return Optional.empty();
+            throw new IllegalArgumentException("This login is occupied");
 
-        User user = new User(UUID.randomUUID().toString(), login, passwordHash, Role.USER);
-        this.userRepository.save(user);
-        return Optional.of(user);
+        if(login == null || login.isBlank() || password == null || password.isBlank())
+            throw new IllegalArgumentException("Login nd password cannot be blank");
+
+        String passwordHash = hashPassword(password);
+        User user = new User(null, login, passwordHash, Role.USER);
+        return this.userRepository.save(user);
     }
 
     public Optional<User> login(String login, String password) {

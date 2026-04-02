@@ -63,7 +63,7 @@ public class RentalJsonRepository implements RentalRepository {
     public Optional<Rental> findByVehicleIdAndReturnDateIsNull(String vehicleId) {
         return this.rentals.stream()
                 .filter(rental -> rental.getVehicleId().equals(vehicleId))
-                .filter(rental -> rental.getReturnDateTime() == null || rental.getReturnDateTime().isBlank())
+                .filter(Rental::isActive)
                 .findFirst()
                 .map(Rental::copy);
     }

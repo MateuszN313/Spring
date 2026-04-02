@@ -1,39 +1,54 @@
 package org.example;
 
+import org.example.models.Rental;
 import org.example.models.User;
 import org.example.models.Role;
 
 import org.example.models.Vehicle;
-import org.example.repositories.RentalRepository;
-import org.example.repositories.UserRepository;
-import org.example.repositories.VehicleRepository;
 import org.example.services.AuthService;
+import org.example.services.RentalService;
+import org.example.services.UserService;
+import org.example.services.VehicleService;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 
-import static org.example.models.Role.USER;
-
 public class UI {
-    private final VehicleRepository vehicleRepository;
-    private final UserRepository userRepository;
-    private final RentalRepository rentalRepository;
     private final AuthService authService;
+    private final RentalService rentalService;
+    private final UserService userService;
+    private final VehicleService vehicleService;
     private final Scanner scanner;
     private User user;
 
-    public UI(VehicleRepository vehicleRepository, UserRepository userRepository, RentalRepository rentalRepository, AuthService authService){
-        this.vehicleRepository = vehicleRepository;
-        this.userRepository = userRepository;
-        this.rentalRepository = rentalRepository;
+    public UI(AuthService authService, RentalService rentalService, UserService userService, VehicleService vehicleService){
         this.authService = authService;
+        this.rentalService = rentalService;
+        this.userService = userService;
+        this.vehicleService = vehicleService;
         this.scanner = new Scanner(System.in);
+        this.user = null;
     }
 
     public void start() {
-        if(!begin())
-            return;
+        while(true){
+            System.out.println("1 - Log in\n" +
+                    "2 - Register\n" +
+                    "3 - Leave");
+            String choice = this.scanner.nextLine();
+
+            if(choice.equals("1")){
+                if(login())
+                    break;
+            }else if(choice.equals("2")){
+                if(register())
+                    break;
+            }else if(choice.equals("3")){
+                return;
+            }
+        }
 
         String choice;
         do{
@@ -52,7 +67,7 @@ public class UI {
             choice = this.scanner.nextLine();
 
             switch(choice){
-                case "1" -> showVehicles();
+                case "1" -> this.vehicleService.showVehicles();
                 case "2" -> rent();
                 case "3" -> ret();
             }
@@ -61,50 +76,27 @@ public class UI {
                 switch(choice){
                     case "5" -> addVehicle();
                     case "6" -> removeVehicle();
-                    case "7" -> showUsers();
+                    case "7" -> this.userService.showUsers();
                     case "8" -> removeUser();
                 }
             }
         }while(!choice.equals("4"));
     }
 
-    private boolean begin(){
-        while(true){
-            System.out.println("1 - Zaloguj się\n" +
-                    "2 - Zarejestruj się\n" +
-                    "3 - Wyjdź");
-            String choice = this.scanner.nextLine();
-
-            if(choice.equals("1")){
-                if(login())
-                    return true;
-            }else if(choice.equals("2")){
-                if(register())
-                    return true;
-            }else if(choice.equals("3")){
-                return false;
-            }
-        }
-    }
     private boolean register(){
-        System.out.println("Podaj login");
+        System.out.println("Login:");
         String login = this.scanner.nextLine();
-        System.out.println("Podaj hasło");
-        String passwordHash = this.authService.hashPassword(this.scanner.nextLine());
+        System.out.println("Password");
+        String password = this.scanner.nextLine();
 
-        Optional<User> opt = this.authService.register(login, passwordHash);
-        if(opt.isPresent()){
-            this.user = opt.get();
-            return true;
-        }
-        System.out.println("Nie udało się zarejestrować");
-        return false;
+        this.user = this.authService.register(login, password);
+        return this.user != null;
     }
 
     private boolean login(){
-        System.out.println("Podaj login");
+        System.out.println("Login:");
         String login = this.scanner.nextLine();
-        System.out.println("Podaj hasło");
+        System.out.println("Password:");
         String password = this.scanner.nextLine();
 
         Optional<User> opt = this.authService.login(login, password);
@@ -112,125 +104,95 @@ public class UI {
             this.user = opt.get();
             return true;
         }
-        System.out.println("nie udało się zalogować");
+        System.out.println("wrong login or password");
         return false;
     }
 
-    private void showVehicles(){
-        List<Vehicle> copy = this.vehicleRepository.findAll();
-        for(Vehicle v : copy){
-            System.out.println(v.toString());
-        }
-    }
-
     private void rent(){
-        System.out.println("Podaj id");
+        System.out.println("Vehicle ID:");
         String id = this.scanner.nextLine();
-        this.vehicleRepository.rentVehicle(id);
-        this.user.setRentedVehicleId(id);
-        this.userRepository.update(this.user);
+        if(!this.vehicleService.checkVehicle(id))
+            System.err.println("No vehicle with such ID");
+
+        Rental rental = rentalService.startRental(id, this.user.getId());
+        System.out.println("Started rental " + rental.getId());
     }
 
     private void ret(){
-        this.vehicleRepository.returnVehicle(this.user.getRentedVehicleId());
-        this.user.setRentedVehicleId("");
-        this.userRepository.update(this.user);
+        System.out.println("Rental ID:");
+        String id = this.scanner.nextLine();
+        Rental rental = rentalService.endRental(id);
+        System.out.println("Ended rental " + rental.getId());
     }
 
     private void addVehicle(){
-        Vehicle v = null;
+        System.out.println("Category:");
+        String category = this.scanner.nextLine();
 
-        System.out.println("Podaj dane pojazdu:\n" +
-                "1 - Samochód | 2 - Motocykl");
-        String type = this.scanner.nextLine();
-
-        System.out.println("ID:");
-        String id = this.scanner.nextLine();
-
-        System.out.println("Marka:");
+        System.out.println("Brand:");
         String brand = this.scanner.nextLine();
 
         System.out.println("Model");
         String model = this.scanner.nextLine();
 
-        System.out.println("Rok produkcji:");
+        System.out.println("Year of production:");
         int year;
         try{
-            year = Integer.parseInt(this.scanner.nextLine()); //number format
+            year = Integer.parseInt(this.scanner.nextLine());
         }catch (NumberFormatException e){
-            System.out.println("Rok musi być liczbą");
+            System.out.println("Year must be a number");
             return;
         }
 
-        System.out.println("Cena:");
+        System.out.println("Plate");
+        String plate = this.scanner.nextLine();
+
+        System.out.println("Price:");
         double price;
         try{
-            price = Double.parseDouble(this.scanner.nextLine()); //number format
+            price = Double.parseDouble(this.scanner.nextLine());
         }catch (NumberFormatException e){
-            System.out.println("Cena musi być liczbą");
+            System.out.println("Price must be a number");
             return;
         }
 
-        if(type.equals("1")) {
-            v = new Car(id, brand, model, year, price, false);
-        }else if(type.equals("2")){
-            System.out.println("Kategoria prawa jazdy:\n" +
-                    "AM | A1 | A2 | B | A");
-            DrivingLicenceCategory drivingLicence = null;
-            try{
-                drivingLicence = DrivingLicenceCategory.valueOf(this.scanner.nextLine());
-            }catch (IllegalArgumentException e){
-                System.out.println("Podaj prawidłową kategorię prawa jazdy");
-                return;
-            }
-            v = new Motorcycle(id, brand, model, year, price, false, drivingLicence);
+        System.out.println("Attributes:");
+        Map<String, Object> attributes = new HashMap<>();
+        while(true){
+            System.out.println("Name | end - leave");
+            String name = this.scanner.nextLine();
+
+            if(name.equals("end"))
+                break;
+
+            System.out.println("Value");
+            Object value = null;
+            if(this.scanner.hasNextLine())
+                value = this.scanner.nextLine();
+            else if(this.scanner.hasNextInt())
+                value = Integer.parseInt(this.scanner.nextLine());
+            else if(this.scanner.hasNextDouble())
+                value = Double.parseDouble(this.scanner.nextLine());
+
+            attributes.put(name, value);
         }
 
-        this.vehicleRepository.add(v);
+        this.vehicleService.addVehicle(category, brand, model, year, plate, price, attributes);
     }
 
     private void removeVehicle(){
-        System.out.println("Podaj ID");
+        System.out.println("Vehicle ID");
         String id = this.scanner.nextLine();
 
-        Optional<Vehicle> opt = this.vehicleRepository.findById(id);
-        if(opt.isEmpty()){
-            System.out.println("Nie znaleziono pojazdu z podanym ID");
-            return;
-        }
-        Vehicle vehicle = opt.get();
-        System.out.println(vehicle);
-        System.out.println("Czy napewno chcesz usunąć ten pojazd?\n" +
-                "T - tak | Inne - nie");
-        String tmp = this.scanner.nextLine();
-        if(tmp.equals("T") || tmp.equals("t")){
-            this.vehicleRepository.deleteById(id);
-        }
-    }
-
-    private void showUsers(){
-        List<User> copy = this.userRepository.findAll();
-        for(User u : copy){
-            System.out.println(u.toString());
-        }
+        Vehicle vehicle = this.vehicleService.deleteVehicle(id);
+        System.out.println("Deleted vehicle " + vehicle);
     }
 
     private void removeUser(){
-        System.out.println("Podaj ID");
+        System.out.println("User ID:");
         String id = this.scanner.nextLine();
 
-        Optional<User> opt = this.userRepository.findById(id);
-        if(opt.isEmpty()){
-            System.out.println("Nie znaleziono użytkownika z podanym id");
-            return;
-        }
-        User user = opt.get();
-        System.out.println(user);
-        System.out.println("Czy napewno chcesz usunąć tego użytkownika?\n" +
-                "T - tak | Inne - nie");
-        String tmp = this.scanner.nextLine();
-        if(tmp.equals("T") || tmp.equals("t")){
-            this.userRepository.deleteById(id);
-        }
+        User user = this.userService.deleteUser(id);
+        System.out.println("Deleted user " + user);
     }
 }

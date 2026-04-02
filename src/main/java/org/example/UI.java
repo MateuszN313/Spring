@@ -52,17 +52,16 @@ public class UI {
 
         String choice;
         do{
-            System.out.println("\nWybierz akcję:\n" +
-                    "1 - Wyświetl pojazdy\n" +
-                    "2 - Wypożycz pojazd\n" +
-                    "3 - Zwróć pojazd\n" +
-                    "4 - Wyjdź");
+            System.out.println("\n1 - Show vehicles\n" +
+                    "2 - Rent vehicle\n" +
+                    "3 - Return vehicle\n" +
+                    "4 - Leave");
             if(this.user.getRole() == Role.ADMIN){
                 System.out.println("\nADMIN:\n" +
-                        "5 - Dodaj pojazd\n" +
-                        "6 - Usuń pojazd\n" +
-                        "7 - Wyświetl użytkowników\n" +
-                        "8 - Usuń użytkownika");
+                        "5 - Add vehicle\n" +
+                        "6 - Remove vehicle\n" +
+                        "7 - Show users\n" +
+                        "8 - Remove user");
             }
             choice = this.scanner.nextLine();
 
@@ -89,7 +88,12 @@ public class UI {
         System.out.println("Password");
         String password = this.scanner.nextLine();
 
-        this.user = this.authService.register(login, password);
+        try{
+            this.user = this.authService.register(login, password);
+        }catch(IllegalArgumentException e){
+            System.err.println(e.getMessage());
+        }
+
         return this.user != null;
     }
 
@@ -99,13 +103,13 @@ public class UI {
         System.out.println("Password:");
         String password = this.scanner.nextLine();
 
-        Optional<User> opt = this.authService.login(login, password);
-        if(opt.isPresent()){
-            this.user = opt.get();
-            return true;
+        try{
+            this.user = this.authService.login(login, password);
+        }catch (IllegalArgumentException e){
+            System.err.println(e.getMessage());
         }
-        System.out.println("wrong login or password");
-        return false;
+
+        return this.user != null;
     }
 
     private void rent(){
@@ -114,15 +118,29 @@ public class UI {
         if(!this.vehicleService.checkVehicle(id))
             System.err.println("No vehicle with such ID");
 
-        Rental rental = rentalService.startRental(id, this.user.getId());
-        System.out.println("Started rental " + rental.getId());
+        Rental rental = null;
+        try{
+            rental = rentalService.startRental(id, this.user.getId());
+        }catch(IllegalArgumentException e){
+            System.err.println(e.getMessage());
+        }
+
+        if(rental != null)
+            System.out.println("Started rental " + rental.getId());
     }
 
     private void ret(){
         System.out.println("Rental ID:");
         String id = this.scanner.nextLine();
-        Rental rental = rentalService.endRental(id);
-        System.out.println("Ended rental " + rental.getId());
+        Rental rental = null;
+        try{
+            rental = rentalService.endRental(id);
+        }catch(IllegalArgumentException e){
+            System.err.println(e.getMessage());
+        }
+
+        if(rental != null)
+            System.out.println("Ended rental " + rental.getId());
     }
 
     private void addVehicle(){
@@ -140,7 +158,7 @@ public class UI {
         try{
             year = Integer.parseInt(this.scanner.nextLine());
         }catch (NumberFormatException e){
-            System.out.println("Year must be a number");
+            System.err.println("Year must be a number");
             return;
         }
 
@@ -152,14 +170,14 @@ public class UI {
         try{
             price = Double.parseDouble(this.scanner.nextLine());
         }catch (NumberFormatException e){
-            System.out.println("Price must be a number");
+            System.err.println("Price must be a number");
             return;
         }
 
         System.out.println("Attributes:");
         Map<String, Object> attributes = new HashMap<>();
         while(true){
-            System.out.println("Name | end - leave");
+            System.out.println("Name | \"end\" - leave");
             String name = this.scanner.nextLine();
 
             if(name.equals("end"))
@@ -177,22 +195,37 @@ public class UI {
             attributes.put(name, value);
         }
 
-        this.vehicleService.addVehicle(category, brand, model, year, plate, price, attributes);
+        Vehicle vehicle = this.vehicleService.addVehicle(category, brand, model, year, plate, price, attributes);
+        System.out.println("Added vehicle " + vehicle);
     }
 
     private void removeVehicle(){
         System.out.println("Vehicle ID");
         String id = this.scanner.nextLine();
 
-        Vehicle vehicle = this.vehicleService.deleteVehicle(id);
-        System.out.println("Deleted vehicle " + vehicle);
+        Vehicle vehicle = null;
+        try{
+            vehicle = this.vehicleService.deleteVehicle(id);
+        }catch(IllegalArgumentException e){
+            System.err.println(e.getMessage());
+        }
+
+        if(vehicle != null)
+            System.out.println("Deleted vehicle " + vehicle);
     }
 
     private void removeUser(){
         System.out.println("User ID:");
         String id = this.scanner.nextLine();
 
-        User user = this.userService.deleteUser(id);
-        System.out.println("Deleted user " + user);
+        User user = null;
+        try{
+            user = this.userService.deleteUser(id);
+        }catch(IllegalArgumentException e){
+            System.err.println(e.getMessage());
+        }
+
+        if(user != null)
+            System.out.println("Deleted user " + user);
     }
 }

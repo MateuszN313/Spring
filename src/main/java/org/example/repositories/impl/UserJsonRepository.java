@@ -12,9 +12,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class UserJsonRepository implements UserRepository {
-    private List<User> users;
+    private final List<User> users;
     private final JsonFileStorage<User> storage =
-            new JsonFileStorage<>("users.json", new TypeToken<List<User>>() {}.getType());
+            new JsonFileStorage<>("src/main/resources/users.json", new TypeToken<List<User>>() {}.getType());
 
     public UserJsonRepository() {
         this.users = new ArrayList<>(this.storage.load());
@@ -40,7 +40,7 @@ public class UserJsonRepository implements UserRepository {
     @Override
     public Optional<User> findByLogin(String login) {
         return this.users.stream()
-                .filter(user -> user.getId().equals(login))
+                .filter(user -> user.getLogin().equals(login))
                 .findFirst()
                 .map(User::copy);
     }

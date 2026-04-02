@@ -17,7 +17,7 @@ public class VehicleService {
     public void showVehicles(){
         List<Vehicle> copy = this.vehicleRepository.findAll();
         for(Vehicle vehicle : copy){
-            System.out.println(vehicle.toString());
+            System.out.println(vehicle);
         }
     }
 

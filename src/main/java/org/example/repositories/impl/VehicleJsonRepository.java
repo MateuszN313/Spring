@@ -11,9 +11,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class VehicleJsonRepository implements VehicleRepository {
-    private List<Vehicle> vehicles;
+    private final List<Vehicle> vehicles;
     private final JsonFileStorage<Vehicle> storage =
-            new JsonFileStorage<>("vehicles.json", new TypeToken<List<Vehicle>>() {}.getType());
+            new JsonFileStorage<>("src/main/resources/vehicles.json", new TypeToken<List<Vehicle>>() {}.getType());
 
     public VehicleJsonRepository() {
         this.vehicles = new ArrayList<>(this.storage.load());

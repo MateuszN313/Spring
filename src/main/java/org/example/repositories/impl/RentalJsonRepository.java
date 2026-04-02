@@ -12,9 +12,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class RentalJsonRepository implements RentalRepository {
-    private List<Rental> rentals;
+    private final List<Rental> rentals;
     private final JsonFileStorage<Rental> storage =
-            new JsonFileStorage<>("rentals.json", new TypeToken<List<Rental>>() {}.getType());
+            new JsonFileStorage<>("src/main/resources/rentals.json", new TypeToken<List<Rental>>() {}.getType());
 
     public RentalJsonRepository() {
         this.rentals = new ArrayList<>(this.storage.load());

@@ -31,9 +31,15 @@ public class AuthService {
         return this.userRepository.save(user);
     }
 
-    public Optional<User> login(String login, String password) {
-        String passwordHash = hashPassword(password);
+    public User login(String login, String password) {
         Optional<User> opt = this.userRepository.findByLogin(login);
-        return opt.filter(user -> user.getPasswordHash().equals(passwordHash));
+        if(opt.isEmpty())
+            throw new IllegalArgumentException("No user with such login");
+
+        User user = opt.get();
+        if(!BCrypt.checkpw(password, user.getPasswordHash()))
+            throw new IllegalArgumentException("Wrong password");
+
+        return user;
     }
 }

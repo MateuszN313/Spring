@@ -41,6 +41,11 @@ public class RentalService {
     }
 
     public boolean isUserRenting(String userId){
-        return this.rentalRepository.findByUserIdAndReturnDateIsNull(userId).isPresent();
+        return this.rentalRepository.findAll().stream()
+                .filter(rental -> rental.getUserId().equals(userId))
+                .filter(Rental::isActive)
+                .findFirst()
+                .map(Rental::copy)
+                .isPresent();
     }
 }

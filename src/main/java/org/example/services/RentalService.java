@@ -4,6 +4,7 @@ import org.example.models.Rental;
 import org.example.repositories.RentalRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public class RentalService {
@@ -11,6 +12,10 @@ public class RentalService {
 
     public RentalService(RentalRepository rentalRepository) {
         this.rentalRepository = rentalRepository;
+    }
+
+    public List<Rental> getRentals(){
+        return this.rentalRepository.findAll();
     }
 
     public Rental startRental(String vehicleId, String userId){
@@ -29,5 +34,13 @@ public class RentalService {
         Rental rental = opt.get();
         rental.setReturnDateTime(LocalDateTime.now().toString());
         return this.rentalRepository.save(rental);
+    }
+
+    public boolean isVehicleRented(String vehicleId){
+        return this.rentalRepository.findByVehicleIdAndReturnDateIsNull(vehicleId).isPresent();
+    }
+
+    public boolean isUserRenting(String userId){
+        return this.rentalRepository.findByUserIdAndReturnDateIsNull(userId).isPresent();
     }
 }

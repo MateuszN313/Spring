@@ -1,6 +1,7 @@
 package org.example.services;
 
 import org.example.models.User;
+import org.example.models.Vehicle;
 import org.example.repositories.UserRepository;
 
 import java.util.List;
@@ -13,11 +14,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public void showUsers(){
-        List<User> copy = this.userRepository.findAll();
-        for(User user : copy){
-            System.out.println(user);
-        }
+    public List<User> getUsers(){
+        return this.userRepository.findAll();
     }
 
     public User deleteUser(String userId){

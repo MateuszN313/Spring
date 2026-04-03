@@ -10,10 +10,7 @@ import org.example.services.RentalService;
 import org.example.services.UserService;
 import org.example.services.VehicleService;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 public class UI {
     private final AuthService authService;
@@ -53,33 +50,39 @@ public class UI {
         String choice;
         do{
             System.out.println("\n1 - Show vehicles\n" +
-                    "2 - Rent vehicle\n" +
-                    "3 - Return vehicle\n" +
-                    "4 - Leave");
+                    "2 - Show your rentals\n" +
+                    "3 - Rent vehicle\n" +
+                    "4 - End rental\n" +
+                    "5 - Leave");
             if(this.user.getRole() == Role.ADMIN){
                 System.out.println("\nADMIN:\n" +
-                        "5 - Add vehicle\n" +
-                        "6 - Remove vehicle\n" +
-                        "7 - Show users\n" +
-                        "8 - Remove user");
+                        "6 - Show all vehicles\n" +
+                        "7 - Add vehicle\n" +
+                        "8 - Remove vehicle\n" +
+                        "9 - Show users\n" +
+                        "10 - Remove user\n" +
+                        "11 - Show all rentals");
             }
             choice = this.scanner.nextLine();
 
             switch(choice){
-                case "1" -> this.vehicleService.showVehicles();
-                case "2" -> rent();
-                case "3" -> ret();
+                case "1" -> showNotRentedVehicles();
+                case "2" -> showRentals();
+                case "3" -> rent();
+                case "4" -> ret();
             }
 
             if(this.user.getRole() == Role.ADMIN){
                 switch(choice){
-                    case "5" -> addVehicle();
-                    case "6" -> removeVehicle();
-                    case "7" -> this.userService.showUsers();
-                    case "8" -> removeUser();
+                    case "6" -> showAllVehicles();
+                    case "7" -> addVehicle();
+                    case "8" -> removeVehicle();
+                    case "9" -> showUsers();
+                    case "10" -> removeUser();
+                    case "11" -> showAllRentals();
                 }
             }
-        }while(!choice.equals("4"));
+        }while(!choice.equals("5"));
     }
 
     private boolean register(){
@@ -112,6 +115,43 @@ public class UI {
         return this.user != null;
     }
 
+    private void showNotRentedVehicles(){
+        List<Vehicle> vehicles = this.vehicleService.getVehicles();
+        for(Vehicle vehicle : vehicles){
+            if(!rentalService.isVehicleRented(vehicle.getId()))
+                System.out.println(vehicle);
+        }
+    }
+
+    private void showAllVehicles(){
+        List<Vehicle> vehicles = this.vehicleService.getVehicles();
+        for(Vehicle vehicle : vehicles){
+            System.out.println(vehicle);
+        }
+    }
+
+    private void showUsers(){
+        List<User> users = this.userService.getUsers();
+        for(User user : users){
+            System.out.println(user);
+        }
+    }
+
+    private void showRentals(){
+        List<Rental> rentals = this.rentalService.getRentals();
+        for(Rental rental : rentals){
+            if(rental.getUserId().equals(this.user.getId()) && rental.isActive())
+                System.out.println(rental);
+        }
+    }
+
+    private void showAllRentals(){
+        List<Rental> rentals = this.rentalService.getRentals();
+        for(Rental rental : rentals){
+            System.out.println(rental);
+        }
+    }
+
     private void rent(){
         System.out.println("Vehicle ID:");
         String id = this.scanner.nextLine();
@@ -126,7 +166,7 @@ public class UI {
         }
 
         if(rental != null)
-            System.out.println("Started rental " + rental.getId());
+            System.out.println("Started rental " + rental);
     }
 
     private void ret(){
@@ -140,7 +180,7 @@ public class UI {
         }
 
         if(rental != null)
-            System.out.println("Ended rental " + rental.getId());
+            System.out.println("Ended rental " + rental);
     }
 
     private void addVehicle(){
@@ -203,6 +243,11 @@ public class UI {
         System.out.println("Vehicle ID");
         String id = this.scanner.nextLine();
 
+        if(this.rentalService.isVehicleRented(id)){
+            System.err.println("Cannot remove vehicle because of active rental");
+            return;
+        }
+
         Vehicle vehicle = null;
         try{
             vehicle = this.vehicleService.deleteVehicle(id);
@@ -217,6 +262,11 @@ public class UI {
     private void removeUser(){
         System.out.println("User ID:");
         String id = this.scanner.nextLine();
+
+        if(this.rentalService.isUserRenting(id)){
+            System.err.println("Cannot remove user because of active rental");
+            return;
+        }
 
         User user = null;
         try{

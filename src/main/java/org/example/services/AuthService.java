@@ -19,27 +19,26 @@ public class AuthService {
         return BCrypt.hashpw(password, salt);
     }
 
-    public User register(String login, String password) {
+    public boolean register(String login, String password) {
         if(this.userRepository.findByLogin(login).isPresent())
-            throw new IllegalArgumentException("This login is occupied");
+            return false;
 
         if(login == null || login.isBlank() || password == null || password.isBlank())
-            throw new IllegalArgumentException("Login nd password cannot be blank");
+            return false;
 
         String passwordHash = hashPassword(password);
         User user = new User(null, login, passwordHash, Role.USER);
-        return this.userRepository.save(user);
+        this.userRepository.save(user);
+        return true;
     }
 
-    public User login(String login, String password) {
+    public Optional<User> login(String login, String password) {
         Optional<User> opt = this.userRepository.findByLogin(login);
-        if(opt.isEmpty())
-            throw new IllegalArgumentException("No user with such login");
-
-        User user = opt.get();
-        if(!BCrypt.checkpw(password, user.getPasswordHash()))
-            throw new IllegalArgumentException("Wrong password");
-
-        return user;
+        if(opt.isPresent()){
+            User user = opt.get();
+            if(!BCrypt.checkpw(password, user.getPasswordHash()))
+                return Optional.empty();
+        }
+        return opt;
     }
 }

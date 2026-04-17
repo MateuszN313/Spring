@@ -1,19 +1,19 @@
-package com.umcsuser.carrent;
+package org.example;
 
-import com.umcsuser.carrent.repositories.RentalRepository;
-import com.umcsuser.carrent.repositories.UserRepository;
-import com.umcsuser.carrent.repositories.VehicleCategoryConfigRepository;
-import com.umcsuser.carrent.repositories.VehicleRepository;
-import com.umcsuser.carrent.repositories.impl.RentalJsonRepository;
-import com.umcsuser.carrent.repositories.impl.UserJsonRepository;
-import com.umcsuser.carrent.repositories.impl.VehicleCategoryConfigJsonRepository;
-import com.umcsuser.carrent.repositories.impl.VehicleJsonRepository;
-import com.umcsuser.carrent.services.AuthService;
-import com.umcsuser.carrent.services.RentalService;
-import com.umcsuser.carrent.services.UserService;
-import com.umcsuser.carrent.services.VehicleCategoryConfigService;
-import com.umcsuser.carrent.services.VehicleService;
-import com.umcsuser.carrent.services.VehicleValidator;
+import org.example.repositories.RentalRepository;
+import org.example.repositories.UserRepository;
+import org.example.repositories.VehicleCategoryConfigRepository;
+import org.example.repositories.VehicleRepository;
+import org.example.repositories.impl.RentalJsonRepository;
+import org.example.repositories.impl.UserJsonRepository;
+import org.example.repositories.impl.VehicleCategoryConfigJsonRepository;
+import org.example.repositories.impl.VehicleJsonRepository;
+import org.example.services.AuthService;
+import org.example.services.RentalService;
+import org.example.services.UserService;
+import org.example.services.VehicleCategoryConfigService;
+import org.example.services.VehicleService;
+import org.example.services.VehicleValidator;
 
 public class Main {
     public static void main(String[] args) {

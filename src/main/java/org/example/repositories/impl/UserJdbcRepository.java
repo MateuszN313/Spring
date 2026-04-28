@@ -106,6 +106,7 @@ public class UserJdbcRepository implements UserRepository {
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while saving user", e);
         }
+        return user;
     }
 
     @Override

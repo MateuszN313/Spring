@@ -79,7 +79,9 @@ public class VehicleJdbcRepository implements VehicleRepository {
                 stmt.setInt(5, vehicle.getYear());
                 stmt.setString(6, vehicle.getPlate());
                 stmt.setDouble(7, vehicle.getPrice());
-                stmt.setString(8, gson.toJson(vehicle.getAttributes()));
+                stmt.setString(8, gson.toJson(
+                        vehicle.getAttributes() != null ? vehicle.getAttributes() : new HashMap<>()
+                ));
             }else{
                 stmt.setString(1, vehicle.getCategory());
                 stmt.setString(2, vehicle.getBrand());
@@ -87,7 +89,9 @@ public class VehicleJdbcRepository implements VehicleRepository {
                 stmt.setInt(4, vehicle.getYear());
                 stmt.setString(5, vehicle.getPlate());
                 stmt.setDouble(6, vehicle.getPrice());
-                stmt.setString(7, gson.toJson(vehicle.getAttributes()));
+                stmt.setString(7, gson.toJson(
+                        vehicle.getAttributes() != null ? vehicle.getAttributes() : new HashMap<>()
+                ));
                 stmt.setString(8, vehicle.getId());
             }
 

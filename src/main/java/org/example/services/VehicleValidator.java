@@ -51,7 +51,7 @@ public class VehicleValidator {
                 case "string" -> value instanceof String;
                 case "number" -> value instanceof Number;
                 case "boolean" -> value instanceof Boolean;
-                case "integer" -> value instanceof Integer;
+                case "integer" -> value instanceof Number n && n.doubleValue() % 1 == 0;
                 default -> throw new IllegalArgumentException("Nieobsługiwany typ w configu: " + expectedType);
             };
             if (!isValidType) {

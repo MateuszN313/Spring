@@ -4,10 +4,7 @@ import org.example.repositories.RentalRepository;
 import org.example.repositories.UserRepository;
 import org.example.repositories.VehicleCategoryConfigRepository;
 import org.example.repositories.VehicleRepository;
-import org.example.repositories.impl.RentalJsonRepository;
-import org.example.repositories.impl.UserJsonRepository;
-import org.example.repositories.impl.VehicleCategoryConfigJsonRepository;
-import org.example.repositories.impl.VehicleJsonRepository;
+import org.example.repositories.impl.*;
 import org.example.services.AuthService;
 import org.example.services.RentalService;
 import org.example.services.UserService;
@@ -17,10 +14,26 @@ import org.example.services.VehicleValidator;
 
 public class Main {
     public static void main(String[] args) {
-        VehicleRepository vehicleRepository = new VehicleJsonRepository();
-        UserRepository userRepository = new UserJsonRepository();
-        RentalRepository rentalRepository = new RentalJsonRepository();
         VehicleCategoryConfigRepository categoryConfigRepository = new VehicleCategoryConfigJsonRepository();
+
+        VehicleRepository vehicleRepository;
+        UserRepository userRepository;
+        RentalRepository rentalRepository;
+
+        if(args.length == 0){
+            throw new RuntimeException("No repository type given");
+        }
+        if(args[0].equals("json")){
+            vehicleRepository = new VehicleJsonRepository();
+            userRepository = new UserJsonRepository();
+            rentalRepository = new RentalJsonRepository();
+        }else if(args[0].equals("jdbc")){
+            vehicleRepository = new VehicleJdbcRepository();
+            userRepository = new UserJdbcRepository();
+            rentalRepository = new RentalJdbcRepository();
+        }else{
+            throw new RuntimeException("No repository type given");
+        }
 
         AuthService authService = new AuthService(userRepository);
         VehicleCategoryConfigService categoryConfigService = new VehicleCategoryConfigService(categoryConfigRepository);

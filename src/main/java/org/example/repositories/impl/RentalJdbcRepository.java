@@ -8,10 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class RentalJdbcRepository implements RentalRepository {
     @Override
@@ -29,6 +27,8 @@ public class RentalJdbcRepository implements RentalRepository {
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while reading rentals", e);
         }
+
+        rentals.sort((r1, r2) -> r2.getRentDateTime().compareTo(r1.getRentDateTime()));
         return rentals;
     }
 

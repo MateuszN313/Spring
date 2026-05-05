@@ -1,5 +1,6 @@
 package org.example.models;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -9,10 +10,18 @@ import lombok.*;
 @Builder
 @EqualsAndHashCode(of = "id")
 @ToString(exclude = "passwordHash")
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
+    @Column(nullable = false, unique = true)
     private String id;
+
     private String login;
     private String passwordHash;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     public User copy(){

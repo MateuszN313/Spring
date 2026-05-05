@@ -1,6 +1,12 @@
 package org.example.models;
 
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,15 +18,24 @@ import java.util.Map;
 @Builder
 @EqualsAndHashCode(of = "id")
 @ToString
+@Entity
+@Table(name = "vehicle")
 public class Vehicle {
+    @Id
+    @Column(nullable = false, unique = true)
     private String id;
+
     private String category;
     private String brand;
     private String model;
     private int year;
     private String plate;
+
+    @Column(columnDefinition = "NUMERIC")
     private double price;
 
+    @Column(columnDefinition = "jsonb")
+    @Type(JsonBinaryType.class)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private Map<String, Object> attributes;

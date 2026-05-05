@@ -1,16 +1,17 @@
-package org.example.services;
+package org.example.services.impl;
 
 import org.example.models.Role;
 import org.example.models.User;
 import org.example.repositories.UserRepository;
+import org.example.services.AuthServiceInterface;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Optional;
 
-public class AuthService {
+public class AuthSimpleService implements AuthServiceInterface {
     private final UserRepository userRepository;
 
-    public AuthService(UserRepository userRepository) {
+    public AuthSimpleService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -19,6 +20,7 @@ public class AuthService {
         return BCrypt.hashpw(password, salt);
     }
 
+    @Override
     public boolean register(String login, String password) {
         if(this.userRepository.findByLogin(login).isPresent())
             return false;
@@ -32,6 +34,7 @@ public class AuthService {
         return true;
     }
 
+    @Override
     public Optional<User> login(String login, String password) {
         Optional<User> opt = this.userRepository.findByLogin(login);
         if(opt.isPresent()){

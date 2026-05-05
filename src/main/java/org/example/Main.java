@@ -5,11 +5,11 @@ import org.example.repositories.UserRepository;
 import org.example.repositories.VehicleCategoryConfigRepository;
 import org.example.repositories.VehicleRepository;
 import org.example.repositories.impl.*;
-import org.example.services.AuthService;
-import org.example.services.RentalService;
-import org.example.services.UserService;
+import org.example.services.impl.AuthSimpleService;
+import org.example.services.impl.RentalSimpleService;
+import org.example.services.impl.UserSimpleService;
 import org.example.services.VehicleCategoryConfigService;
-import org.example.services.VehicleService;
+import org.example.services.impl.VehicleSimpleService;
 import org.example.services.VehicleValidator;
 
 public class Main {
@@ -30,17 +30,17 @@ public class Main {
         }else if(args[0].equals("jdbc")){
             vehicleRepository = new VehicleJdbcRepository();
             userRepository = new UserJdbcRepository();
-            rentalRepository = new RentalJdbcRepository();
+            rentalRepository = new RentalJdbcRepository(vehicleRepository, userRepository);
         }else{
-            throw new RuntimeException("No repository type given");
+            throw new RuntimeException("Wrong repository type given");
         }
 
-        AuthService authService = new AuthService(userRepository);
+        AuthSimpleService authService = new AuthSimpleService(userRepository);
         VehicleCategoryConfigService categoryConfigService = new VehicleCategoryConfigService(categoryConfigRepository);
         VehicleValidator vehicleValidator = new VehicleValidator(categoryConfigService);
-        VehicleService vehicleService = new VehicleService(vehicleRepository, rentalRepository, vehicleValidator);
-        RentalService rentalService = new RentalService(rentalRepository, vehicleRepository);
-        UserService userService = new UserService(userRepository, rentalService);
+        VehicleSimpleService vehicleService = new VehicleSimpleService(vehicleRepository, rentalRepository, vehicleValidator);
+        RentalSimpleService rentalService = new RentalSimpleService(rentalRepository, vehicleRepository, userRepository);
+        UserSimpleService userService = new UserSimpleService(userRepository, rentalService);
 
         UI ui = new UI(
                 authService,

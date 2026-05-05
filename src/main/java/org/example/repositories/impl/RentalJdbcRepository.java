@@ -3,6 +3,8 @@ package org.example.repositories.impl;
 import org.example.db.JdbcConnectionManager;
 import org.example.models.Rental;
 import org.example.repositories.RentalRepository;
+import org.example.repositories.UserRepository;
+import org.example.repositories.VehicleRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +14,13 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class RentalJdbcRepository implements RentalRepository {
+    private final VehicleRepository vehicleRepository;
+    private final UserRepository userRepository;
+
+    public RentalJdbcRepository(VehicleRepository vehicleRepository, UserRepository userRepository){
+        this.vehicleRepository = vehicleRepository;
+        this.userRepository = userRepository;
+    }
     @Override
     public List<Rental> findAll() {
         List<Rental> rentals = new ArrayList<>();
@@ -127,8 +136,8 @@ public class RentalJdbcRepository implements RentalRepository {
     private Rental mapRow(ResultSet rs) throws SQLException {
         return Rental.builder()
                 .id(rs.getString("id"))
-                .vehicleId(rs.getString("vehicle_id"))
-                .userId(rs.getString("user_id"))
+                .vehicle(this.vehicleRepository.findById(rs.getString("vehicle_id")).get())
+                .user(this.userRepository.findById(rs.getString("user_id")).get())
                 .rentDateTime(rs.getString("rent_date"))
                 .returnDateTime(rs.getString("return_date"))
                 .build();

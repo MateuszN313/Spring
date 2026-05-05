@@ -2,6 +2,10 @@ package org.example;
 
 import org.example.models.*;
 import org.example.services.*;
+import org.example.services.impl.AuthSimpleService;
+import org.example.services.impl.RentalSimpleService;
+import org.example.services.impl.UserSimpleService;
+import org.example.services.impl.VehicleSimpleService;
 
 import java.util.List;
 import java.util.Map;
@@ -9,15 +13,15 @@ import java.util.Scanner;
 
 public class UI {
 
-    private final AuthService authService;
-    private final VehicleService vehicleService;
-    private final RentalService rentalService;
-    private final UserService userService;
+    private final AuthSimpleService authService;
+    private final VehicleSimpleService vehicleService;
+    private final RentalSimpleService rentalService;
+    private final UserSimpleService userService;
     private final VehicleCategoryConfigService categoryConfigService;
     private final Scanner scanner = new Scanner(System.in);
 
-    public UI(AuthService authService, VehicleService vehicleService, RentalService rentalService,
-              UserService userService, VehicleCategoryConfigService categoryConfigService) {
+    public UI(AuthSimpleService authService, VehicleSimpleService vehicleService, RentalSimpleService rentalService,
+              UserSimpleService userService, VehicleCategoryConfigService categoryConfigService) {
         this.authService = authService;
         this.vehicleService = vehicleService;
         this.rentalService = rentalService;
@@ -68,8 +72,7 @@ public class UI {
             switch (scanner.nextLine().trim()) {
                 case "1" -> vehicleService.findAllVehicles().forEach(v ->
                         System.out.println(v +
-                                " [Wypożyczony: " + vehicleService.isVehicleRented(v.getId()) + "]"
-                                + "[Wypożyczony: " +rentalService.vehicleHasActiveRental(v.getId()) + "]"));
+                                "[Wypożyczony: " +rentalService.vehicleHasActiveRental(v.getId()) + "]"));
                 case "2" -> addVehicle();
                 case "3" -> deleteVehicle();
                 case "4" -> showAllUsers();

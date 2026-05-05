@@ -1,28 +1,35 @@
-package org.example.services;
+package org.example.services.impl;
 
 import org.example.models.Rental;
+import org.example.models.User;
+import org.example.models.Vehicle;
 import org.example.repositories.RentalRepository;
+import org.example.repositories.UserRepository;
 import org.example.repositories.VehicleRepository;
+import org.example.services.RentalServiceInterface;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RentalService {
+public class RentalSimpleService implements RentalServiceInterface {
     private final RentalRepository rentalRepository;
-
     private final VehicleRepository vehicleRepository;
+    private final UserRepository userRepository;
 
-    public RentalService(RentalRepository rentalRepository, VehicleRepository vehicleRepository) {
+    public RentalSimpleService(RentalRepository rentalRepository, VehicleRepository vehicleRepository, UserRepository userRepository) {
         this.rentalRepository = rentalRepository;
-        this. vehicleRepository = vehicleRepository;
+        this.vehicleRepository = vehicleRepository;
+        this.userRepository = userRepository;
     }
 
+    @Override
     public List<Rental> findAllRentals(){
         return this.rentalRepository.findAll();
     }
 
+    @Override
     public List<Rental> findUserRentals(String userId){
         List<Rental> all = this.rentalRepository.findAll();
         List<Rental> user = new ArrayList<>();
@@ -33,36 +40,44 @@ public class RentalService {
         return user;
     }
 
-    public void rentVehicle(String userId, String vehicleId){
+    @Override
+    public Rental rentVehicle(String userId, String vehicleId){
         if(findActiveRentalByUserId(userId).isPresent())
             throw new IllegalArgumentException("user is already renting");
 
         if(this.rentalRepository.findByVehicleIdAndReturnDateIsNull(vehicleId).isPresent())
             throw new IllegalArgumentException("this vehicle is already rented");
 
-        Rental rental = new Rental(null, vehicleId, userId, LocalDateTime.now().toString(), null);
-        this.rentalRepository.save(rental);
+        Vehicle vehicle = this.vehicleRepository.findById(vehicleId).get();
+        User user = this.userRepository.findById(userId).get();
+
+        Rental rental = new Rental(null, vehicle, user, LocalDateTime.now().toString(), null);
+        return this.rentalRepository.save(rental);
     }
 
-    public void returnVehicle(String userId){
+    @Override
+    public Rental returnVehicle(String userId){
         Optional<Rental> opt = findActiveRentalByUserId(userId);
         if(opt.isEmpty())
             throw new IllegalArgumentException("user doesn't have rentals");
 
         Rental rental = opt.get();
         rental.setReturnDateTime(LocalDateTime.now().toString());
-        this.rentalRepository.save(rental);
+        return this.rentalRepository.save(rental);
     }
 
+    @Override
     public boolean vehicleHasActiveRental(String vehicleId){
         return this.rentalRepository.findByVehicleIdAndReturnDateIsNull(vehicleId).isPresent();
     }
 
+    @Override
     public boolean userHasActiveRental(String userId){
         return this.rentalRepository.findAll().stream()
                 .anyMatch(rental -> rental.getUserId().equals(userId) && rental.isActive());
     }
 
+    @Override
     public Optional<Rental> findActiveRentalByUserId(String userId){
         return this.rentalRepository.findAll().stream()
                 .filter(rental -> rental.getUserId().equals(userId))

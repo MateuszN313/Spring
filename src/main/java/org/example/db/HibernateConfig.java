@@ -20,8 +20,8 @@ public class HibernateConfig {
             configuration.setProperty("hibernate.connection.url", System.getenv("DB_URL"));
 
             configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-            configuration.setProperty("hibernate.show_sql", "true");
-            configuration.setProperty("hibernate.format_sql", "true");
+            configuration.setProperty("hibernate.show_sql", "false");
+            configuration.setProperty("hibernate.format_sql", "false");
             configuration.setProperty("hibernate.hbm2ddl.auto", "validate");
 
             configuration.addAnnotatedClass(User.class);

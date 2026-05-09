@@ -3,13 +3,11 @@ package org.example.services.impl;
 import org.example.models.Role;
 import org.example.models.User;
 import org.example.repositories.UserRepository;
-import org.example.services.UserServiceInterface;
-import org.example.services.impl.RentalSimpleService;
 
 import java.util.List;
 import java.util.Optional;
 
-public class UserSimpleService implements UserServiceInterface {
+public class UserSimpleService implements org.example.services.UserServiceInterface {
     private final UserRepository userRepository;
 
     private final RentalSimpleService rentalService;

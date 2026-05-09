@@ -3,14 +3,13 @@ package org.example.services.impl;
 import org.example.models.Vehicle;
 import org.example.repositories.RentalRepository;
 import org.example.repositories.VehicleRepository;
-import org.example.services.VehicleServiceInterface;
 import org.example.services.VehicleValidator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class VehicleSimpleService implements VehicleServiceInterface {
+public class VehicleSimpleService implements org.example.services.VehicleServiceInterface {
     private final VehicleRepository vehicleRepository;
 
     private final RentalRepository rentalRepository;

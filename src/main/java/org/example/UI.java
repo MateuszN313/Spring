@@ -13,15 +13,15 @@ import java.util.Scanner;
 
 public class UI {
 
-    private final AuthSimpleService authService;
-    private final VehicleSimpleService vehicleService;
-    private final RentalSimpleService rentalService;
-    private final UserSimpleService userService;
+    private final AuthServiceInterface authService;
+    private final VehicleServiceInterface vehicleService;
+    private final RentalServiceInterface rentalService;
+    private final UserServiceInterface userService;
     private final VehicleCategoryConfigService categoryConfigService;
     private final Scanner scanner = new Scanner(System.in);
 
-    public UI(AuthSimpleService authService, VehicleSimpleService vehicleService, RentalSimpleService rentalService,
-              UserSimpleService userService, VehicleCategoryConfigService categoryConfigService) {
+    public UI(AuthServiceInterface authService, VehicleServiceInterface vehicleService, RentalServiceInterface rentalService,
+              UserServiceInterface userService, VehicleCategoryConfigService categoryConfigService) {
         this.authService = authService;
         this.vehicleService = vehicleService;
         this.rentalService = rentalService;
@@ -164,13 +164,16 @@ public class UI {
         }
 
         users.forEach(user -> {
-            System.out.println(user);
+            System.out.println("================================================================================\n" +
+                    user +
+                    "\n================================================================================");
+
             List<Rental> rentals = rentalService.findUserRentals(user.getId());
 
             if (rentals.isEmpty()) {
                 System.out.println("  Historia wypożyczeń: brak\n--------------------");
             } else {
-                System.out.println("  Historia wypożyczeń:");
+                System.out.println("  Historia wypożyczeń:\n--------------------");
                 rentals.forEach(this::printRentalDetails);
             }
         });

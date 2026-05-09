@@ -6,14 +6,13 @@ import org.example.models.Vehicle;
 import org.example.repositories.RentalRepository;
 import org.example.repositories.UserRepository;
 import org.example.repositories.VehicleRepository;
-import org.example.services.RentalServiceInterface;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RentalSimpleService implements RentalServiceInterface {
+public class RentalSimpleService implements org.example.services.RentalServiceInterface {
     private final RentalRepository rentalRepository;
     private final VehicleRepository vehicleRepository;
     private final UserRepository userRepository;

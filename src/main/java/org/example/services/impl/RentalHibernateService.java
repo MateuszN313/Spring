@@ -101,10 +101,7 @@ public class RentalHibernateService implements RentalServiceInterface {
         try(Session session = HibernateConfig.getSessionFactory().openSession()){
             setSession(session);
 
-            return this.rentalRepository.findAll().stream()
-                    .filter(r -> r.getUserId().equals(userId))
-                    .filter(Rental::isActive)
-                    .findFirst();
+            return this.rentalRepository.findByUserIdAndReturnDateIsNull(userId);
         }
     }
 

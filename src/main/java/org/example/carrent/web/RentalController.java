@@ -20,7 +20,7 @@ public class RentalController {
         return this.rentalService.findAllRentals();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/users/{id}")
     public List<Rental> listByUserId(@PathVariable String id){
         return this.rentalService.findUserRentals(id);
     }
@@ -30,7 +30,7 @@ public class RentalController {
         return this.rentalService.rentVehicle(userId, vehicleId);
     }
 
-    @PutMapping("/return/{userId}")
+    @PutMapping("/users/{userId}/return")
     public Rental returnVehicle(@PathVariable String userId){
         return this.rentalService.returnVehicle(userId);
     }

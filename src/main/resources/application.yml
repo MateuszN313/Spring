@@ -9,7 +9,7 @@ server:
 
 carrent:
   json:
-    users-file: users.json
-    vehicles-file: vehicles.json
-    rentals-file: rentals.json
-    categories-file: categories.json
+    users-file: src/main/resources/users.json
+    vehicles-file: src/main/resources/vehicles.json
+    rentals-file: src/main/resources/rentals.json
+    categories-file: src/main/resources/categories.json

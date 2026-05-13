@@ -1,7 +1,6 @@
 package org.example.carrent.repositories.impl.jpa;
 
 import org.example.carrent.models.User;
-import org.example.carrent.repositories.UserJpaRepository;
 import org.example.carrent.repositories.UserRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -20,26 +19,26 @@ public class UserRepositoryJpaAdapter implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        return null;
+        return delegate.findAll();
     }
 
     @Override
     public Optional<User> findById(String id) {
-        return Optional.empty();
+        return delegate.findById(id);
     }
 
     @Override
     public Optional<User> findByLogin(String login) {
-        return Optional.empty();
+        return delegate.findByLogin(login);
     }
 
     @Override
     public User save(User user) {
-        return null;
+        return delegate.save(user);
     }
 
     @Override
     public void deleteById(String id) {
-
+        delegate.deleteById(id);
     }
 }

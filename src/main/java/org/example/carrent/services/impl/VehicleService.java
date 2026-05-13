@@ -5,11 +5,15 @@ import org.example.carrent.services.VehicleServiceInterface;
 import org.example.carrent.models.Vehicle;
 import org.example.carrent.repositories.VehicleRepository;
 import org.example.carrent.services.VehicleValidator;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@Transactional
 public class VehicleService implements VehicleServiceInterface {
     private final VehicleRepository vehicleRepository;
     private final RentalRepository rentalRepository;
@@ -22,11 +26,13 @@ public class VehicleService implements VehicleServiceInterface {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Vehicle> findAllVehicles(){
         return this.vehicleRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Vehicle> findAvailableVehicles(){
         List<Vehicle> all = this.vehicleRepository.findAll();
         List<Vehicle> available = new ArrayList<>();
@@ -39,11 +45,13 @@ public class VehicleService implements VehicleServiceInterface {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Vehicle findById(String vehicleId){
         return this.vehicleRepository.findById(vehicleId).get();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isVehicleRented(String vehicleId){
         return this.rentalRepository.findByVehicleIdAndReturnDateIsNull(vehicleId).isPresent();
     }
@@ -57,7 +65,7 @@ public class VehicleService implements VehicleServiceInterface {
     @Override
     public void removeVehicle(String vehicleId) {
         if(isVehicleRented(vehicleId))
-            throw new IllegalArgumentException("This vehicle is rented");
+            throw new IllegalStateException("This vehicle is rented");
 
         Optional<Vehicle> opt = this.vehicleRepository.findById(vehicleId);
         if (opt.isEmpty()) {

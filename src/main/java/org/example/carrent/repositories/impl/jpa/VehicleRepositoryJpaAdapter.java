@@ -1,7 +1,6 @@
 package org.example.carrent.repositories.impl.jpa;
 
 import org.example.carrent.models.Vehicle;
-import org.example.carrent.repositories.VehicleJpaRepository;
 import org.example.carrent.repositories.VehicleRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -20,21 +19,21 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
 
     @Override
     public List<Vehicle> findAll() {
-        return null;
+        return delegate.findAll();
     }
 
     @Override
     public Optional<Vehicle> findById(String id) {
-        return Optional.empty();
+        return delegate.findById(id);
     }
 
     @Override
     public Vehicle save(Vehicle vehicle) {
-        return null;
+        return delegate.save(vehicle);
     }
 
     @Override
     public void deleteById(String id) {
-
+        delegate.deleteById(id);
     }
 }

@@ -5,9 +5,13 @@ import org.example.carrent.services.AuthServiceInterface;
 import org.example.carrent.models.Role;
 import org.example.carrent.models.User;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Service
+@Transactional
 public class AuthService implements AuthServiceInterface {
     private final UserRepository userRepository;
 
@@ -35,6 +39,7 @@ public class AuthService implements AuthServiceInterface {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> login(String login, String password) {
         Optional<User> opt = this.userRepository.findByLogin(login);
         if(opt.isPresent()){

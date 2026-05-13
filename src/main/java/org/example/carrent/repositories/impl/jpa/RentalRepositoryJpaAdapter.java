@@ -1,7 +1,6 @@
 package org.example.carrent.repositories.impl.jpa;
 
 import org.example.carrent.models.Rental;
-import org.example.carrent.repositories.RentalJpaRepository;
 import org.example.carrent.repositories.RentalRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -12,7 +11,7 @@ import java.util.Optional;
 @Repository
 @Profile("jpa")
 public class RentalRepositoryJpaAdapter implements RentalRepository {
-    private RentalJpaRepository delegate;
+    private final RentalJpaRepository delegate;
 
     public RentalRepositoryJpaAdapter(RentalJpaRepository delegate) {
         this.delegate = delegate;
@@ -20,26 +19,26 @@ public class RentalRepositoryJpaAdapter implements RentalRepository {
 
     @Override
     public List<Rental> findAll() {
-        return null;
+        return delegate.findAll();
     }
 
     @Override
     public Optional<Rental> findById(String id) {
-        return Optional.empty();
+        return delegate.findById(id);
     }
 
     @Override
     public Rental save(Rental rental) {
-        return null;
+        return delegate.save(rental);
     }
 
     @Override
     public void deleteById(String id) {
-
+        delegate.deleteById(id);
     }
 
     @Override
     public Optional<Rental> findByVehicleIdAndReturnDateIsNull(String vehicleId) {
-        return Optional.empty();
+        return delegate.findByVehicle_IdAndReturnDateTimeIsNull(vehicleId);
     }
 }

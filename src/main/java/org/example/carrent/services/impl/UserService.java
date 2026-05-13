@@ -5,10 +5,14 @@ import org.example.carrent.services.RentalServiceInterface;
 import org.example.carrent.services.UserServiceInterface;
 import org.example.carrent.models.Role;
 import org.example.carrent.models.User;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@Transactional
 public class UserService implements UserServiceInterface {
     private final UserRepository userRepository;
     private final RentalServiceInterface rentalService;
@@ -19,11 +23,13 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> findAllUsers(){
         return this.userRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findById(String userId){
         return this.userRepository.findById(userId).get();
     }
@@ -31,10 +37,10 @@ public class UserService implements UserServiceInterface {
     @Override
     public void deleteUser(String userId, String adminId){
         if(!findById(adminId).getRole().equals(Role.ADMIN))
-            throw new IllegalArgumentException("Deleting user must be admin");
+            throw new IllegalStateException("Deleting user must be admin");
 
         if(rentalService.userHasActiveRental(userId))
-            throw new IllegalArgumentException("This user is renting");
+            throw new IllegalStateException("This user is renting");
 
         Optional<User> opt = this.userRepository.findById(userId);
         if(opt.isEmpty())

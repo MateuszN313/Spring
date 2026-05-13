@@ -5,6 +5,7 @@ import org.example.carrent.db.JsonFileStorage;
 import org.example.carrent.models.VehicleCategoryConfig;
 import org.example.carrent.repositories.VehicleCategoryConfigRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

@@ -2,9 +2,11 @@ package org.example.carrent.services.impl;
 
 import org.example.carrent.models.VehicleCategoryConfig;
 import org.example.carrent.repositories.VehicleCategoryConfigRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class VehicleCategoryConfigService {
     private final VehicleCategoryConfigRepository configRepository;
 

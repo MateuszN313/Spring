@@ -17,15 +17,16 @@ import java.util.*;
 @Repository
 @Profile("jdbc")
 public class RentalJdbcRepository implements RentalRepository {
+    private final DataSource dataSource;
     private final VehicleRepository vehicleRepository;
     private final UserRepository userRepository;
-    private final DataSource dataSource;
 
-    public RentalJdbcRepository(VehicleRepository vehicleRepository, UserRepository userRepository, DataSource dataSource){
+    public RentalJdbcRepository(DataSource dataSource, VehicleRepository vehicleRepository, UserRepository userRepository){
+        this.dataSource = dataSource;
         this.vehicleRepository = vehicleRepository;
         this.userRepository = userRepository;
-        this.dataSource = dataSource;
     }
+
     @Override
     public List<Rental> findAll() {
         List<Rental> rentals = new ArrayList<>();

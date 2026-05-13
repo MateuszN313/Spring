@@ -1,4 +1,4 @@
-package org.example.carrent.repositories;
+package org.example.carrent.repositories.impl.jpa;
 
 import org.example.carrent.models.Vehicle;
 import org.springframework.context.annotation.Profile;

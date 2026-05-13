@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @Profile("jpa")
@@ -29,6 +30,9 @@ public class RentalRepositoryJpaAdapter implements RentalRepository {
 
     @Override
     public Rental save(Rental rental) {
+        if(rental.getId() == null || rental.getId().isBlank()){
+            rental.setId(UUID.randomUUID().toString());
+        }
         return delegate.save(rental);
     }
 

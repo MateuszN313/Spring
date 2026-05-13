@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @Profile("jpa")
@@ -34,6 +35,9 @@ public class UserRepositoryJpaAdapter implements UserRepository {
 
     @Override
     public User save(User user) {
+        if(user.getId() == null || user.getId().isBlank()){
+            user.setId(UUID.randomUUID().toString());
+        }
         return delegate.save(user);
     }
 

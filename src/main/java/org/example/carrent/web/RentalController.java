@@ -30,7 +30,7 @@ public class RentalController {
         return this.rentalService.rentVehicle(userId, vehicleId);
     }
 
-    @PostMapping("/return/{userId}")
+    @PutMapping("/return/{userId}")
     public Rental returnVehicle(@PathVariable String userId){
         return this.rentalService.returnVehicle(userId);
     }

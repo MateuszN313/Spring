@@ -71,7 +71,7 @@ public class VehicleJdbcRepository implements VehicleRepository {
         if(vehicle.getId() == null || vehicle.getId().isBlank()) {
             add = true;
             vehicle.setId(UUID.randomUUID().toString());
-            sql = "INSERT INTO vehicle (id, category, brand, model, year, plate, price, attributes) VALUES (?, ?, ?, ?, ?, ?, ?, ?::jsonb)";
+            sql = "INSERT INTO vehicle (id, category, brand, model, year, plate, price, attributes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         }else{
             add = false;
             sql = "UPDATE vehicle SET category = ?, brand = ?, model = ?, year = ?, plate = ?, price = ?, attributes = ? WHERE id = ?";

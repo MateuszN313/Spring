@@ -6,7 +6,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,11 +36,10 @@ public class Vehicle {
     @Column(columnDefinition = "NUMERIC")
     private double price;
 
-    @Column(columnDefinition = "jsonb")
-    @Type(JsonBinaryType.class)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private Map<String, Object> attributes;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Object> attributes = new HashMap<>();
 
     @Builder
     public Vehicle(String id, String category, String brand, String model, int year, String plate, double price, Map<String, Object> attributes) {

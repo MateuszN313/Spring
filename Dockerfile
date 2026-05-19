@@ -1,4 +1,4 @@
-FROM maven:3.9.16-eclipse-temurin-17 AS builder
+FROM maven:3.9.4-eclipse-temurin-21-alpine AS builder
 WORKDIR /app
 COPY pom.xml .
 RUN mvn -B dependency:go-offline

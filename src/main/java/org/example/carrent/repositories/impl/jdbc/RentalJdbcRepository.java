@@ -5,6 +5,7 @@ import org.example.carrent.repositories.RentalRepository;
 import org.example.carrent.repositories.UserRepository;
 import org.example.carrent.repositories.VehicleRepository;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -32,8 +33,9 @@ public class RentalJdbcRepository implements RentalRepository {
         List<Rental> rentals = new ArrayList<>();
         String sql = "SELECT * FROM rental";
 
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql);
+        Connection connection = DataSourceUtils.getConnection(this.dataSource);
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery()){
 
             while(rs.next()){
@@ -41,6 +43,8 @@ public class RentalJdbcRepository implements RentalRepository {
             }
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while reading rentals", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, this.dataSource);
         }
 
         rentals.sort((r1, r2) -> r2.getRentDateTime().compareTo(r1.getRentDateTime()));
@@ -51,8 +55,9 @@ public class RentalJdbcRepository implements RentalRepository {
     public Optional<Rental> findById(String id) {
         String sql = "SELECT * FROM rental WHERE id = ?";
 
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql)){
+        Connection connection = DataSourceUtils.getConnection(this.dataSource);
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql)){
 
             stmt.setString(1, id);
             try(ResultSet rs = stmt.executeQuery()){
@@ -63,6 +68,8 @@ public class RentalJdbcRepository implements RentalRepository {
             }
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while reading rental", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, this.dataSource);
         }
         return Optional.empty();
     }
@@ -81,8 +88,9 @@ public class RentalJdbcRepository implements RentalRepository {
             sql = "UPDATE rental SET vehicle_id = ?, user_id = ?, rent_date = ?, return_date = ? WHERE id = ?";
         }
 
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql)){
+        Connection connection = DataSourceUtils.getConnection(this.dataSource);
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql)){
 
             if(add){
                 stmt.setString(1, rental.getId());
@@ -101,6 +109,8 @@ public class RentalJdbcRepository implements RentalRepository {
             stmt.executeUpdate();
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while saving rental", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, this.dataSource);
         }
         return rental;
     }
@@ -109,13 +119,16 @@ public class RentalJdbcRepository implements RentalRepository {
     public void deleteById(String id) {
         String sql = "DELETE FROM rental WHERE id = ?";
 
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql)){
+        Connection connection = DataSourceUtils.getConnection(this.dataSource);
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql)){
 
             stmt.setString(1, id);
             stmt.executeUpdate();
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while deleting rental", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, this.dataSource);
         }
     }
 
@@ -123,8 +136,9 @@ public class RentalJdbcRepository implements RentalRepository {
     public Optional<Rental> findByVehicleIdAndReturnDateIsNull(String vehicleId) {
         String sql = "SELECT * FROM rental WHERE vehicle_id = ? AND return_date IS NULL";
 
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql)){
+        Connection connection = DataSourceUtils.getConnection(this.dataSource);
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql)){
 
             stmt.setString(1, vehicleId);
             try(ResultSet rs = stmt.executeQuery()){
@@ -135,6 +149,8 @@ public class RentalJdbcRepository implements RentalRepository {
             }
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while reading rental", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, this.dataSource);
         }
         return Optional.empty();
     }

@@ -4,6 +4,7 @@ import org.example.carrent.models.Role;
 import org.example.carrent.models.User;
 import org.example.carrent.repositories.UserRepository;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -29,8 +30,9 @@ public class UserJdbcRepository implements UserRepository {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
 
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql);
+        Connection connection = DataSourceUtils.getConnection(this.dataSource);
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery()){
 
             while(rs.next()){
@@ -38,6 +40,8 @@ public class UserJdbcRepository implements UserRepository {
             }
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while reading users", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, this.dataSource);
         }
         return users;
     }
@@ -46,8 +50,9 @@ public class UserJdbcRepository implements UserRepository {
     public Optional<User> findById(String id) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql)){
+        Connection connection = DataSourceUtils.getConnection(this.dataSource);
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql)){
 
             stmt.setString(1, id);
             try(ResultSet rs = stmt.executeQuery()){
@@ -58,6 +63,8 @@ public class UserJdbcRepository implements UserRepository {
             }
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while reading user", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, this.dataSource);
         }
         return Optional.empty();
     }
@@ -66,8 +73,9 @@ public class UserJdbcRepository implements UserRepository {
     public Optional<User> findByLogin(String login) {
         String sql = "SELECT * FROM users WHERE login = ?";
 
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql)){
+        Connection connection = DataSourceUtils.getConnection(this.dataSource);
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql)){
 
             stmt.setString(1, login);
             try(ResultSet rs = stmt.executeQuery()){
@@ -78,6 +86,8 @@ public class UserJdbcRepository implements UserRepository {
             }
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while reading user", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, this.dataSource);
         }
         return Optional.empty();
     }
@@ -96,8 +106,9 @@ public class UserJdbcRepository implements UserRepository {
             sql = "UPDATE users SET login = ?, password_hash = ?, role = ? WHERE id = ?";
         }
 
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql)){
+        Connection connection = DataSourceUtils.getConnection(this.dataSource);
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql)){
 
             if(add){
                 stmt.setString(1, user.getId());
@@ -114,6 +125,8 @@ public class UserJdbcRepository implements UserRepository {
             stmt.executeUpdate();
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while saving user", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, this.dataSource);
         }
         return user;
     }
@@ -122,13 +135,16 @@ public class UserJdbcRepository implements UserRepository {
     public void deleteById(String id) {
         String sql = "DELETE FROM users WHERE ID = ?";
 
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql)){
+        Connection connection = DataSourceUtils.getConnection(this.dataSource);
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql)){
 
             stmt.setString(1, id);
             stmt.executeUpdate();
         }catch(SQLException e){
             throw new RuntimeException("Error occurred while deleting user", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, this.dataSource);
         }
     }
 

@@ -1,4 +1,3 @@
 package org.example.carrent.dto;
 
-public class LoginResponse {
-}
+public record LoginResponse (String token) { }

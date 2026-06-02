@@ -1,7 +1,14 @@
 package org.example.carrent.web;
 
+import org.example.carrent.dto.RentalRequest;
 import org.example.carrent.models.Rental;
+import org.example.carrent.models.User;
 import org.example.carrent.services.RentalServiceInterface;
+import org.example.carrent.services.UserServiceInterface;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,9 +17,12 @@ import java.util.List;
 @RequestMapping("/api/rentals")
 public class RentalController {
     private final RentalServiceInterface rentalService;
+    private final UserServiceInterface userService;
 
-    public RentalController(RentalServiceInterface rentalService) {
+    public RentalController(RentalServiceInterface rentalService,
+                            UserServiceInterface userService) {
         this.rentalService = rentalService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -25,13 +35,29 @@ public class RentalController {
         return this.rentalService.findUserRentals(id);
     }
 
-    @PostMapping("/users/{userId}/rent/{vehicleId}")
-    public Rental rentVehicle(@PathVariable String userId, @PathVariable String vehicleId){
-        return this.rentalService.rentVehicle(userId, vehicleId);
+    @PostMapping("/rent")
+    public ResponseEntity<Rental> rent(
+            @RequestBody RentalRequest rentalRequest,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        String login = userDetails.getUsername();
+        User user = this.userService.findByLogin(login);
+
+        Rental rental = this.rentalService.rentVehicle(
+                user.getId(),
+                rentalRequest.vehicleId()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(rental);
     }
 
-    @PutMapping("/users/{userId}/return")
-    public Rental returnVehicle(@PathVariable String userId){
-        return this.rentalService.returnVehicle(userId);
+    @PostMapping("/return")
+    public ResponseEntity<Rental> ret(@AuthenticationPrincipal UserDetails userDetails) {
+        String login = userDetails.getUsername();
+        User user = this.userService.findByLogin(login);
+
+        Rental rental = this.rentalService.returnVehicle(user.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(rental);
     }
 }

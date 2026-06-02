@@ -1,4 +1,3 @@
 package org.example.carrent.dto;
 
-public class RentalRequest {
-}
+public record RentalRequest (String vehicleId) { }

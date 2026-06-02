@@ -1,4 +1,3 @@
 package org.example.carrent.dto;
 
-public class LoginRequest {
-}
+public record LoginRequest (String login, String password) { }

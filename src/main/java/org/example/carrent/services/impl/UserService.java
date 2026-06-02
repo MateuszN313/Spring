@@ -48,4 +48,9 @@ public class UserService implements UserServiceInterface {
 
         this.userRepository.deleteById(userId);
     }
+
+    @Override
+    public User findByLogin(String login) {
+        return this.userRepository.findByLogin(login).get();
+    }
 }

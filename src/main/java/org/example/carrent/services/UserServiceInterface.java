@@ -11,4 +11,6 @@ public interface UserServiceInterface {
     User findById(String id);
 
     void deleteUser(String id, String loggedUserId);
+
+    User findByLogin(String login);
 }

@@ -26,15 +26,4 @@ public class VehicleController {
     public Vehicle get(@PathVariable String id){
         return this.vehicleService.findById(id);
     }
-
-    @PostMapping
-    public Vehicle create(@RequestBody Vehicle vehicle){
-        return vehicleService.addVehicle(vehicle);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id){
-        this.vehicleService.removeVehicle(id);
-        return ResponseEntity.noContent().build();
-    }
 }

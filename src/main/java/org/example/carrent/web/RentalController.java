@@ -25,11 +25,6 @@ public class RentalController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public List<Rental> list(){
-        return this.rentalService.findAllRentals();
-    }
-
     @GetMapping("/users/{id}")
     public List<Rental> listByUserId(@PathVariable String id){
         return this.rentalService.findUserRentals(id);

@@ -14,16 +14,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
+@RequiredArgsConstructor
 public class AdminController {
-    VehicleServiceInterface vehicleService;
-    RentalServiceInterface rentalService;
-    UserServiceInterface userService;
-
-    public AdminController(VehicleServiceInterface vehicleService, RentalServiceInterface rentalService, UserServiceInterface userService) {
-        this.vehicleService = vehicleService;
-        this.rentalService = rentalService;
-        this.userService = userService;
-    }
+    private VehicleServiceInterface vehicleService;
+    private RentalServiceInterface rentalService;
+    private UserServiceInterface userService;
 
     @PostMapping("/vehicles")
     public Vehicle vehicleCreate(@RequestBody Vehicle vehicle){
